@@ -1,0 +1,14 @@
+﻿{
+  "Name": "zDailyIncrease",
+  "Authour": "Nire \"thakyZ\" Inicana",
+  "Version":
+  {
+    "MajorVersion": 0,
+    "MinorVersion": 1,
+    "PacthVersion": 0,
+    "Build": "a"
+  },
+  "Description": "A rendition to the original daily increase mod",
+  "PerSaveConfigs": false,
+  "EntryDll": "zDailyIncrease.dll"
+}

@@ -29,7 +29,7 @@ namespace zDailyIncrease
       this.enabled = true;
       this.randomIncrease = false;
       this.individualConfigs = new List<IndividualNpcConfig>();
-      individualConfigs.Add(new IndividualNpcConfig("Default", 2, 0, 2500));
+      individualConfigs.Add(new IndividualNpcConfig("Default", 2, 5, 2500));
 
       return (this as T);
     }

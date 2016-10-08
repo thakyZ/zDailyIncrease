@@ -33,12 +33,12 @@ namespace zDailyIncrease
 
     private void GameEvents_OnNewDay(object sender, EventArgsNewDay e)
     {
-      Log.SyncColour($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", ConsoleColor.Red);
-
       // This calculation needs to be triggered at the end of the day / before saving
       // So only perform action if e.IsNewDay = true as per SMAPI doc
       if (ModConfig.enabled && e.IsNewDay == true)
       {
+        Log.SyncColour($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", ConsoleColor.Red);
+
         Log.SyncColour($"{Environment.NewLine}Friendship increaser enabled. Starting friendship calculation.{Environment.NewLine}", ConsoleColor.Green);
         List<IndividualNpcConfig> individualNpcConfigs = ModConfig.individualConfigs;
         SortedDictionary<string, IndividualNpcConfig> npcConfigsMap = new SortedDictionary<string, IndividualNpcConfig>();

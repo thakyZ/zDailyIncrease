@@ -14,6 +14,16 @@ namespace zDailyIncrease
       get; set;
     }
 
+    public bool noDecrease
+    {
+      get; set;
+    }
+
+    public bool noIncrease
+    {
+      get; set;
+    }
+
     public bool randomIncrease
     {
       get; set;

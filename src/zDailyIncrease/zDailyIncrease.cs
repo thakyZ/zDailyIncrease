@@ -26,7 +26,7 @@ namespace zDailyIncrease
     public override void Entry(params object[] objects)
     {
       ModConfig = new SocialConfig();
-      ModConfig = ModConfig.InitializeConfig<SocialConfig>(base.BaseConfigPath);
+      ModConfig = ModConfig.InitializeConfig(base.BaseConfigPath);
       TimeEvents.OnNewDay += GameEvents_OnNewDay;
       Log.Out("zDailyIncrease => Initialized");
     }
@@ -37,6 +37,7 @@ namespace zDailyIncrease
       // So only perform action if e.IsNewDay = true as per SMAPI doc
       if (ModConfig.enabled && e.IsNewDay == true)
       {
+
         Log.SyncColour($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", ConsoleColor.Red);
 
         Log.SyncColour($"{Environment.NewLine}Friendship increaser enabled. Starting friendship calculation.{Environment.NewLine}", ConsoleColor.Green);
@@ -58,7 +59,7 @@ namespace zDailyIncrease
         float rndNum1 = rndNum * Player.LuckLevel;
         int rndNum2 = (int)rndNum1 + rndNum;
 
-        string[] npcNames = Player.friendships.Keys.ToArray<string>();
+        string[] npcNames = Player.friendships.Keys.ToArray();
         foreach (string npcName in npcNames)
         {
           IndividualNpcConfig config = npcConfigsMap.ContainsKey(npcName) ? npcConfigsMap[npcName] : npcConfigsMap["Default"];
@@ -72,31 +73,38 @@ namespace zDailyIncrease
           //{
           //    friendshipValue += config.baseIncrease + 20;
           //}
-
-          if (ModConfig.randomIncrease == false)
+          if (ModConfig.noDecrease)
           {
-            if (Player.hasPlayerTalkedToNPC(npcName))
-            {
-              friendshipValue += config.talkIncrease;
-              Log.SyncColour($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}.", ConsoleColor.Green);
-            }
-            else
-            {
-              friendshipValue += config.baseIncrease;
-              Log.SyncColour($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}.", ConsoleColor.Red);
-            }
+            Player.friendships[npcName][0] = Player.getFriendshipLevelForNPC(npcName);
+            Log.SyncColour($"No Decrease for: {npcName}. Value is {Player.getFriendshipLevelForNPC(npcName)}", ConsoleColor.Blue);
           }
-          else
+          if (!ModConfig.noIncrease)
           {
-            if (Player.hasPlayerTalkedToNPC(npcName))
+            if (ModConfig.randomIncrease == false)
             {
-              friendshipValue += config.talkIncrease + rndNum2;
-              Log.SyncColour($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}, with random number {rndNum}.", ConsoleColor.Green);
+              if (Player.hasPlayerTalkedToNPC(npcName))
+              {
+                friendshipValue += config.talkIncrease;
+                Log.SyncColour($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}.", ConsoleColor.Green);
+              }
+              else
+              {
+                friendshipValue += config.baseIncrease;
+                Log.SyncColour($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}.", ConsoleColor.Red);
+              }
             }
             else
             {
-              friendshipValue += config.baseIncrease + rndNum2;
-              Log.SyncColour($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}, with random number {rndNum}.", ConsoleColor.Red);
+              if (Player.hasPlayerTalkedToNPC(npcName))
+              {
+                friendshipValue += config.talkIncrease + rndNum2;
+                Log.SyncColour($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}, with random number {rndNum}.", ConsoleColor.Green);
+              }
+              else
+              {
+                friendshipValue += config.baseIncrease + rndNum2;
+                Log.SyncColour($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}, with random number {rndNum}.", ConsoleColor.Red);
+              }
             }
           }
 

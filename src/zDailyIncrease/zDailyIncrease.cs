@@ -21,23 +21,76 @@ namespace zDailyIncrease
 
     public static Game1 TheGame => Program.gamePtr;
 
-    public Random rnd = new Random();
+    public static Random rnd = new Random();
+
+    public static Dictionary<string, int> prevFriends;
 
     public override void Entry(params object[] objects)
     {
       ModConfig = new SocialConfig();
       ModConfig = ModConfig.InitializeConfig(base.BaseConfigPath);
-      TimeEvents.OnNewDay += GameEvents_OnNewDay;
+      GameEvents.OneSecondTick += new EventHandler(this.GameEvents_OneSecondTick);
+      TimeEvents.OnNewDay += new EventHandler<EventArgsNewDay>(this.GameEvents_OnNewDay);
       Log.Out("zDailyIncrease => Initialized");
+      // This calculation needs to be triggered at the end of the day / before saving
+    }
+
+    private void GameEvents_OneSecondTick(object sender, EventArgs e)
+    {
+      if (!Game1.hasLoadedGame)
+      {
+        return;
+      }
+      OneSecondUpdate();
     }
 
     private void GameEvents_OnNewDay(object sender, EventArgsNewDay e)
     {
-      // This calculation needs to be triggered at the end of the day / before saving
+      if (!Game1.hasLoadedGame)
+      {
+        return;
+      }
+      OnNewDay(sender, e);
+    }
+
+    private static void OneSecondUpdate()
+    {
+      if (ModConfig.enabled && ModConfig.noDecrease)
+      {
+        if (prevFriends == null)
+        {
+          SerializableDictionary<string, int[]> serializableDictionary = Player.friendships;
+          //if (serializableDictionary != null)
+          //{
+          //  serializableDictionary. = (KeyValuePair<string, int[]> p) => p.Key.ToString();
+          //}
+          prevFriends = serializableDictionary.ToDictionary((KeyValuePair<string, int[]> p) => p.Key.ToString(), (KeyValuePair<string, int[]> p) => p.Value[0]);
+        }
+        foreach (KeyValuePair<string, int[]> friendship in Player.friendships)
+        {
+          foreach (KeyValuePair<string, int> prevFriend in prevFriends)
+          {
+            if (!friendship.Key.Equals(prevFriend.Key) || friendship.Value[0] >= prevFriend.Value)
+            {
+              continue;
+            }
+            friendship.Value[0] = prevFriend.Value;
+          }
+        }
+        SerializableDictionary<string, int[]> serializableDictionary1 = Player.friendships;
+        //if (C == null)
+        //{
+        //  Cheats.<> c.<> 9__9_3 = (KeyValuePair<string, int[]> p) => p.Key.ToString();
+        //}
+        prevFriends = serializableDictionary1.ToDictionary((KeyValuePair<string, int[]> p) => p.Key.ToString(), (KeyValuePair<string, int[]> p) => p.Value[0]);
+      }
+    }
+
+    private static void OnNewDay(object sender, EventArgsNewDay e)
+    {
       // So only perform action if e.IsNewDay = true as per SMAPI doc
       if (ModConfig.enabled && e.IsNewDay == true)
       {
-
         Log.SyncColour($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", ConsoleColor.Red);
 
         Log.SyncColour($"{Environment.NewLine}Friendship increaser enabled. Starting friendship calculation.{Environment.NewLine}", ConsoleColor.Green);
@@ -75,7 +128,6 @@ namespace zDailyIncrease
           //}
           if (ModConfig.noDecrease)
           {
-            Player.friendships[npcName][0] = Player.getFriendshipLevelForNPC(npcName);
             Log.SyncColour($"No Decrease for: {npcName}. Value is {Player.getFriendshipLevelForNPC(npcName)}", ConsoleColor.Blue);
           }
           if (!ModConfig.noIncrease)

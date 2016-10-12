@@ -37,6 +37,8 @@ namespace zDailyIncrease
     public override T GenerateDefaultConfig<T>()
     {
       this.enabled = true;
+      this.noDecrease = true;
+      this.noIncrease = false;
       this.randomIncrease = false;
       this.individualConfigs = new List<IndividualNpcConfig>();
       individualConfigs.Add(new IndividualNpcConfig("Default", 2, 5, 2500));

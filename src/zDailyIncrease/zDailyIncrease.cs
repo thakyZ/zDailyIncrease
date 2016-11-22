@@ -25,7 +25,7 @@ namespace zDailyIncrease
 
     public override void Entry(IModHelper helper)
     {
-      SocialConfig ModConfig = helper.ReadConfig<SocialConfig>();
+      ModConfig = helper.ReadConfig<SocialConfig>();
       GameEvents.OneSecondTick += new EventHandler(GameEvents_OneSecondTick);
       TimeEvents.OnNewDay += new EventHandler<EventArgsNewDay>(GameEvents_OnNewDay);
       Monitor.Log("zDailyIncrease => Initialized", LogLevel.Debug);
@@ -91,7 +91,7 @@ namespace zDailyIncrease
         Monitor.Log($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", LogLevel.Trace);
 
         Monitor.Log($"{Environment.NewLine}Friendship increaser enabled. Starting friendship calculation.{Environment.NewLine}", LogLevel.Info);
-        List<IndividualNpcConfig> individualNpcConfigs = ModConfig.individualConfigs;
+        IndividualNpcConfig[] individualNpcConfigs = ModConfig.individualConfigs;
         SortedDictionary<string, IndividualNpcConfig> npcConfigsMap = new SortedDictionary<string, IndividualNpcConfig>();
 
         foreach (IndividualNpcConfig individualNpcConfig in individualNpcConfigs)

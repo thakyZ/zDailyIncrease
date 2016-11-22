@@ -8,30 +8,37 @@ namespace zDailyIncrease
     public bool enabled
     {
       get; set;
-    } = true;
+    }
 
     public bool noDecrease
     {
       get; set;
-    } = true;
+    }
 
     public bool noIncrease
     {
       get; set;
-    } = false;
+    }
 
     public bool randomIncrease
     {
       get; set;
-    } = false;
+    }
 
-    public List<IndividualNpcConfig> individualConfigs
+    public IndividualNpcConfig[] individualConfigs
     {
       get; set;
-    } = new List<IndividualNpcConfig>()
+    } = new IndividualNpcConfig[1];
+
+    public SocialConfig()
     {
-      new IndividualNpcConfig("Default", 2, 5, 2500)
-    };
+      enabled = true;
+      noDecrease = true;
+      noIncrease = false;
+      randomIncrease = false;
+
+      individualConfigs[0] = new IndividualNpcConfig("Default", 2, 5, 2500);
+    }
   }
 
   public class IndividualNpcConfig

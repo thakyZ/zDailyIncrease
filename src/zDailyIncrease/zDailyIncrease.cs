@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -11,27 +9,26 @@ namespace zDailyIncrease
 {
   public class zDailyIncrease : Mod
   {
-    public static SocialConfig ModConfig
+    public SocialConfig ModConfig
     {
       get;
       private set;
     }
 
-    public static Farmer Player => Game1.player;
+    public Farmer Player => Game1.player;
 
-    public static Game1 TheGame => Program.gamePtr;
+    public Game1 TheGame => Program.gamePtr;
 
-    public static Random rnd = new Random();
+    public Random rnd = new Random();
 
-    public static Dictionary<string, int> prevFriends;
+    public Dictionary<string, int> prevFriends;
 
-    public override void Entry(params object[] objects)
+    public override void Entry(IModHelper helper)
     {
-      ModConfig = new SocialConfig();
-      ModConfig = ModConfig.InitializeConfig(base.BaseConfigPath);
-      GameEvents.OneSecondTick += new EventHandler(this.GameEvents_OneSecondTick);
-      TimeEvents.OnNewDay += new EventHandler<EventArgsNewDay>(this.GameEvents_OnNewDay);
-      Log.Out("zDailyIncrease => Initialized");
+      SocialConfig ModConfig = helper.ReadConfig<SocialConfig>();
+      GameEvents.OneSecondTick += new EventHandler(GameEvents_OneSecondTick);
+      TimeEvents.OnNewDay += new EventHandler<EventArgsNewDay>(GameEvents_OnNewDay);
+      Monitor.Log("zDailyIncrease => Initialized", LogLevel.Debug);
       // This calculation needs to be triggered at the end of the day / before saving
     }
 
@@ -53,7 +50,7 @@ namespace zDailyIncrease
       OnNewDay(sender, e);
     }
 
-    private static void OneSecondUpdate()
+    private void OneSecondUpdate()
     {
       if (ModConfig.enabled && ModConfig.noDecrease)
       {
@@ -86,14 +83,14 @@ namespace zDailyIncrease
       }
     }
 
-    private static void OnNewDay(object sender, EventArgsNewDay e)
+    private void OnNewDay(object sender, EventArgsNewDay e)
     {
       // So only perform action if e.IsNewDay = true as per SMAPI doc
       if (ModConfig.enabled && e.IsNewDay == true)
       {
-        Log.SyncColour($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", ConsoleColor.Red);
+        Monitor.Log($"zDailyIncrease randomIncrease value is: {ModConfig.randomIncrease}", LogLevel.Trace);
 
-        Log.SyncColour($"{Environment.NewLine}Friendship increaser enabled. Starting friendship calculation.{Environment.NewLine}", ConsoleColor.Green);
+        Monitor.Log($"{Environment.NewLine}Friendship increaser enabled. Starting friendship calculation.{Environment.NewLine}", LogLevel.Info);
         List<IndividualNpcConfig> individualNpcConfigs = ModConfig.individualConfigs;
         SortedDictionary<string, IndividualNpcConfig> npcConfigsMap = new SortedDictionary<string, IndividualNpcConfig>();
 
@@ -118,8 +115,8 @@ namespace zDailyIncrease
           IndividualNpcConfig config = npcConfigsMap.ContainsKey(npcName) ? npcConfigsMap[npcName] : npcConfigsMap["Default"];
           int[] friendshipParams = Player.friendships[npcName];
           int friendshipValue = friendshipParams[0];
-          Log.SyncColour($"{npcName}'s starting friendship value is {Player.getFriendshipLevelForNPC(npcName)}.", ConsoleColor.Green);
-          Log.SyncColour($"{npcName}'s current heart level is {Player.getFriendshipHeartLevelForNPC(npcName)}.", ConsoleColor.Green);
+          Monitor.Log($"{npcName}'s starting friendship value is {Player.getFriendshipLevelForNPC(npcName)}.", LogLevel.Trace);
+          Monitor.Log($"{npcName}'s current heart level is {Player.getFriendshipHeartLevelForNPC(npcName)}.", LogLevel.Trace);
 
           // Not sure why there's a special condition added for spouse. Disabling.
           //if ((Player.spouse != null) && npcName.Equals(Player.spouse))
@@ -128,7 +125,7 @@ namespace zDailyIncrease
           //}
           if (ModConfig.noDecrease)
           {
-            Log.SyncColour($"No Decrease for: {npcName}. Value is {Player.getFriendshipLevelForNPC(npcName)}", ConsoleColor.Blue);
+            Monitor.Log($"No Decrease for: {npcName}. Value is {Player.getFriendshipLevelForNPC(npcName)}", LogLevel.Trace);
           }
           if (!ModConfig.noIncrease)
           {
@@ -137,12 +134,12 @@ namespace zDailyIncrease
               if (Player.hasPlayerTalkedToNPC(npcName))
               {
                 friendshipValue += config.talkIncrease;
-                Log.SyncColour($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}.", ConsoleColor.Green);
+                Monitor.Log($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}.", LogLevel.Trace);
               }
               else
               {
                 friendshipValue += config.baseIncrease;
-                Log.SyncColour($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}.", ConsoleColor.Red);
+                Monitor.Log($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}.", LogLevel.Trace);
               }
             }
             else
@@ -150,12 +147,12 @@ namespace zDailyIncrease
               if (Player.hasPlayerTalkedToNPC(npcName))
               {
                 friendshipValue += config.talkIncrease + rndNum2;
-                Log.SyncColour($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}, with random number {rndNum}.", ConsoleColor.Green);
+                Monitor.Log($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}, with random number {rndNum}.", LogLevel.Trace);
               }
               else
               {
                 friendshipValue += config.baseIncrease + rndNum2;
-                Log.SyncColour($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}, with random number {rndNum}.", ConsoleColor.Red);
+                Monitor.Log($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}, with random number {rndNum}.", LogLevel.Trace);
               }
             }
           }
@@ -165,11 +162,11 @@ namespace zDailyIncrease
             friendshipValue = config.max;
           }
 
-          Log.SyncColour($"{npcName}'s new friendship value is {friendshipValue}. Maximum permitted value is {config.max}.", ConsoleColor.Green);
+          Monitor.Log($"{npcName}'s new friendship value is {friendshipValue}. Maximum permitted value is {config.max}.", LogLevel.Debug);
           Player.friendships[npcName][0] = friendshipValue;
         }
 
-        Log.SyncColour($"{Environment.NewLine}Finished friendship calculation.{Environment.NewLine}", ConsoleColor.Green);
+        Monitor.Log($"{Environment.NewLine}Finished friendship calculation.{Environment.NewLine}", LogLevel.Info);
       }
     }
   }

@@ -1,50 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StardewModdingAPI;
+﻿using System.Collections.Generic;
+using StardewModdingAPI.Advanced;
 
 namespace zDailyIncrease
 {
-  public class SocialConfig : Config
+  public class SocialConfig
   {
     public bool enabled
     {
       get; set;
-    }
+    } = true;
 
     public bool noDecrease
     {
       get; set;
-    }
+    } = true;
 
     public bool noIncrease
     {
       get; set;
-    }
+    } = false;
 
     public bool randomIncrease
     {
       get; set;
-    }
+    } = false;
 
     public List<IndividualNpcConfig> individualConfigs
     {
       get; set;
-    }
-
-    public override T GenerateDefaultConfig<T>()
+    } = new List<IndividualNpcConfig>()
     {
-      this.enabled = true;
-      this.noDecrease = true;
-      this.noIncrease = false;
-      this.randomIncrease = false;
-      this.individualConfigs = new List<IndividualNpcConfig>();
-      individualConfigs.Add(new IndividualNpcConfig("Default", 2, 5, 2500));
-
-      return (this as T);
-    }
+      new IndividualNpcConfig("Default", 2, 5, 2500)
+    };
   }
 
   public class IndividualNpcConfig

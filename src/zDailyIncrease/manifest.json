@@ -4,9 +4,9 @@
   "Version":
   {
     "MajorVersion": 1,
-    "MinorVersion": 1,
-    "PacthVersion": 2,
-    "Build": 12
+    "MinorVersion": 2,
+    "PacthVersion": 0,
+    "Build": 3
   },
   "Description": "A rendition to the original daily increase mod",
   "PerSaveConfigs": false,

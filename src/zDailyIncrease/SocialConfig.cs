@@ -22,6 +22,11 @@
       get; set;
     }
 
+    public bool disableAllOutput
+    {
+      get; set;
+    }
+
     public IndividualNpcConfig[] individualConfigs
     {
       get; set;
@@ -33,6 +38,7 @@
       noDecrease = true;
       noIncrease = false;
       randomIncrease = false;
+      disableAllOutput = false;
 
       individualConfigs[0] = new IndividualNpcConfig("Default", 2, 5, 2500);
     }

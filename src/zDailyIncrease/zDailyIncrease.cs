@@ -118,7 +118,7 @@ namespace zDailyIncrease
               friendshipValue += config.talkIncrease;
               if (!ModConfig.disableAllOutput)
               {
-                Monitor.Log($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}.", LogLevel.Trace);
+                Monitor.Log($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}.", LogLevel.Debug);
               }
             }
             else
@@ -126,7 +126,7 @@ namespace zDailyIncrease
               friendshipValue += config.baseIncrease;
               if (!ModConfig.disableAllOutput)
               {
-                Monitor.Log($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}.", LogLevel.Trace);
+                Monitor.Log($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}.", LogLevel.Debug);
               }
             }
           }
@@ -137,7 +137,7 @@ namespace zDailyIncrease
               friendshipValue += config.talkIncrease + rndNum2;
               if (!ModConfig.disableAllOutput)
               {
-                Monitor.Log($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}, with random number {rndNum}.", LogLevel.Trace);
+                Monitor.Log($"Talked to {npcName} today. Increasing friendship value by {config.talkIncrease}, with random number {rndNum}.", LogLevel.Debug);
               }
             }
             else
@@ -145,7 +145,7 @@ namespace zDailyIncrease
               friendshipValue += config.baseIncrease + rndNum2;
               if (!ModConfig.disableAllOutput)
               {
-                Monitor.Log($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}, with random number {rndNum}.", LogLevel.Trace);
+                Monitor.Log($"Didn't talk to {npcName} today. Increasing friendship value by {config.baseIncrease}, with random number {rndNum}.", LogLevel.Debug);
               }
             }
           }
@@ -165,7 +165,7 @@ namespace zDailyIncrease
 
       if (!ModConfig.disableAllOutput)
       {
-        Monitor.Log($"{Environment.NewLine}Finished friendship calculation.{Environment.NewLine}", LogLevel.Info);
+        Monitor.Log($"{Environment.NewLine}Finished friendship calculation.{Environment.NewLine}", LogLevel.Debug);
       }
     }
   }

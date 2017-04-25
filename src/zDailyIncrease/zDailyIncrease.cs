@@ -100,6 +100,11 @@ namespace zDailyIncrease
           Monitor.Log($"{npcName}'s current heart level is {Player.getFriendshipHeartLevelForNPC(npcName)}.", LogLevel.Trace);
         }
         
+        if ((Player.spouse != null) && npcName.Equals(Player.spouse))
+        {
+          config.max += 1000;
+        }
+
         if (ModConfig.noDecrease && !ModConfig.disableAllOutput)
         {
           Monitor.Log($"No Decrease for: {npcName}. Value is {Player.getFriendshipLevelForNPC(npcName)}", LogLevel.Trace);

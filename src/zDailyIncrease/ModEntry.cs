@@ -7,7 +7,7 @@ using StardewValley;
 
 namespace zDailyIncrease
 {
-  public class zDailyIncrease : Mod
+  public class ModEntry : Mod
   {
     public SocialConfig ModConfig { get; private set; }
 

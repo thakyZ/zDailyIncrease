@@ -1,13 +1,9 @@
 ﻿{
   "Name": "zDailyIncrease",
-  "Author": "Nire \"thakyZ\" Inicana",
-  "Version": {
-    "MajorVersion": 1,
-    "MinorVersion": 3,
-    "PatchVersion": 4,
-    "Build": null
-  },
+  "Author": "Nick \"thakyZ\" Mullally",
+  "Version": "1.3.6",
   "Description": "A rendition to the original daily increase mod",
   "UniqueID": "zdailyincrease",
-  "EntryDll": "zDailyIncrease.dll"
+  "EntryDll": "zDailyIncrease.dll",
+  "UpdateKeys": []
 }

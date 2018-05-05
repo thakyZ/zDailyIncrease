@@ -4,6 +4,8 @@ using System.Linq;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using Netcode;
+using StardewValley.Network;
 
 namespace zDailyIncrease
 {
@@ -12,10 +14,11 @@ namespace zDailyIncrease
     public SocialConfig ModConfig { get; private set; }
 
     public StardewValley.Farmer Player => Game1.player;
+    public NetRootDictionary<long, Farmer> OtherPlayers => Game1.otherFarmers;
 
     public Random rnd = new Random();
 
-    public Dictionary<string, int> prevFriends = new Dictionary<string, int>();
+    public Dictionary<string, Friendship> prevFriends = new Dictionary<string, Friendship>();
 
     public override void Entry(IModHelper helper)
     {
@@ -40,22 +43,22 @@ namespace zDailyIncrease
       {
         if (prevFriends == null)
         {
-          SerializableDictionary<string, int[]> serializableDictionary = Player.friendships;
-          prevFriends = serializableDictionary.ToDictionary(p => p.Key.ToString(), p => p.Value[0]);
+          NetStringDictionary<Friendship, NetRef<Friendship>> serializableDictionary = Player.friendshipData;
+          prevFriends = serializableDictionary.ToDictionary(p => p.Keys.ToString(), p => p[p.Keys.ToString()]);
         }
-        foreach (KeyValuePair<string, int[]> friendship in Player.friendships)
+        foreach (string friendship in Player.friendshipData.Keys.ToArray())
         {
-          foreach (KeyValuePair<string, int> prevFriend in prevFriends)
+          foreach (string prevFriend in prevFriends.Keys)
           {
-            if (!friendship.Key.Equals(prevFriend.Key) || friendship.Value[0] >= prevFriend.Value)
+            if (!Player.friendshipData[friendship].Equals(prevFriend) || Player.friendshipData[friendship].Points >= prevFriends[prevFriend].Points)
             {
               continue;
             }
-            friendship.Value[0] = prevFriend.Value;
+            Player.friendshipData[friendship].Points = prevFriends[prevFriend].Points;
           }
         }
-        SerializableDictionary<string, int[]> serializableDictionary1 = Player.friendships;
-        prevFriends = serializableDictionary1.ToDictionary(p => p.Key.ToString(), p => p.Value[0]);
+        NetStringDictionary<Friendship, NetRef<Friendship>> serializableDictionary1 = Player.friendshipData;
+        prevFriends = serializableDictionary1.ToDictionary(p => p.Keys, p => p.Values);
       }
     }
 
@@ -88,18 +91,18 @@ namespace zDailyIncrease
       float rndNum1 = rndNum * Player.LuckLevel;
       int rndNum2 = (int)rndNum1 + rndNum;
 
-      string[] npcNames = Player.friendships.Keys.ToArray();
+      string[] npcNames = Player.friendshipData.Keys.ToArray();
       foreach (string npcName in npcNames)
       {
         IndividualNpcConfig config = npcConfigsMap.ContainsKey(npcName) ? npcConfigsMap[npcName] : npcConfigsMap["Default"];
-        int[] friendshipParams = Player.friendships[npcName];
-        int friendshipValue = friendshipParams[0];
+        Player.friendshipData.TryGetValue(npcName, out Friendship npcFriendship);
+        int friendshipValue = npcFriendship.Points;
         if (!ModConfig.disableAllOutput)
         {
           Monitor.Log($"{npcName}'s starting friendship value is {Player.getFriendshipLevelForNPC(npcName)}.", LogLevel.Trace);
           Monitor.Log($"{npcName}'s current heart level is {Player.getFriendshipHeartLevelForNPC(npcName)}.", LogLevel.Trace);
         }
-        
+
         if ((Player.spouse != null) && npcName.Equals(Player.spouse))
         {
           config.max += 1000;
@@ -160,7 +163,7 @@ namespace zDailyIncrease
         {
           Monitor.Log($"{npcName}'s new friendship value is {friendshipValue}. Maximum permitted value is {config.max}.", LogLevel.Debug);
         }
-        Player.friendships[npcName][0] = friendshipValue;
+        Player.friendshipData[npcName].Points = friendshipValue;
       }
 
       if (!ModConfig.disableAllOutput)
